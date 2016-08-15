@@ -7,11 +7,11 @@ import pandas as pd
 
 def download_and_categorize(zone, year, months, folder):
 	temp_url = Template('https://coast.noaa.gov/htdata/CMSP/AISDataHandler/' + \
-					'${year}/${month}/Zone${zone}_${year}_${month}.zip')
-	# SOMEHOW RUN IT IN PARALLEL
+					'${year}/${month}/Zone${zone}_${year}_${month}${gdb}.zip')
 	filenames = []
+	gdb = '.gdb' if int(year) < 2014 else '';
 	for month in months:
-		url = temp_url.substitute(year=year, month=month, zone=zone)
+		url = temp_url.substitute(year=year, month=month, zone=zone, gdb=gdb)
 		path = download_data.download_file(url, folder)
 		layer_name = url.split('/')[-1].split('.')[0]
 		layer_names = [layer_name + '_Broadcast', layer_name + '_Vessel', layer_name + '_Voyage']
@@ -42,7 +42,7 @@ def Main():
 	parser.add_argument("zone", type=int, help="UTC zone")
 	parser.add_argument("year", type=int, help="year of historical AIS data to analyze")
 	parser.add_argument("-m", "--months", type=int, nargs='+',
-		help="list ofmonthes, if not specified will use all 12 months")
+		help="list of monthes, if not specified will use all 12 months")
 	parser.add_argument("-f", "--folder", type=str, help="local data store folder")
 
 	args = parser.parse_args()
